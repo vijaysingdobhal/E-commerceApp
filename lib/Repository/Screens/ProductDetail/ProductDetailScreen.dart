@@ -1,5 +1,6 @@
 import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Api/FavoriteService.dart';
+import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -43,21 +44,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Appcolor.cardColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Appcolor.textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
+            icon: const Icon(Icons.share, color: Appcolor.textColor),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border, color: Colors.red),
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border, color: Appcolor.primaryColor),
             onPressed: _toggleFavorite,
           ),
         ],
@@ -78,27 +79,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               const SizedBox(height: 20),
               Text(
                 widget.product['title'],
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Appcolor.textColor),
               ),
               const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(width: 5),
                   Text(
-                    '\$${widget.product['price']}',
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xffF87217)),
+                    '4.8 (320 Review)',
+                    style: const TextStyle(fontSize: 16, color: Appcolor.secondaryTextColor),
                   ),
+                  const Spacer(),
                   Text(
                     'Seller: Syed Noman',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    style: const TextStyle(fontSize: 16, color: Appcolor.secondaryTextColor),
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
               const Text(
                 'Color',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Appcolor.textColor),
               ),
               const SizedBox(height: 10),
               Row(
@@ -122,9 +124,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     const TabBar(
-                      labelColor: Colors.black,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: Color(0xffF87217),
+                      isScrollable: true,
+                      labelColor: Appcolor.cardColor,
+                      unselectedLabelColor: Appcolor.textColor,
+                      indicator: BoxDecoration(
+                        color: Appcolor.primaryColor,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
                       tabs: [
                         Tab(text: 'Description'),
                         Tab(text: 'Specifications'),
@@ -170,75 +176,74 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: color,
-        border: isSelected ? Border.all(color: const Color(0xffF87217), width: 2) : null,
+        border: isSelected ? Border.all(color: Appcolor.primaryColor, width: 2) : null,
       ),
     );
   }
 
   Widget _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  if (quantity > 1) {
-                    setState(() {
-                      quantity--;
-                    });
-                  }
-                },
-                icon: const Icon(Icons.remove_circle_outline),
-              ),
-              Text(
-                '$quantity',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    quantity++;
-                  });
-                },
-                icon: const Icon(Icons.add_circle_outline),
-              ),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final productToAdd = Map<String, dynamic>.from(widget.product);
-              productToAdd['quantity'] = quantity;
-              _cartService.addToCart(productToAdd);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Product added to cart'),
-                  duration: Duration(seconds: 1),
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Appcolor.textColor,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    if (quantity > 1) {
+                      setState(() {
+                        quantity--;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.remove, color: Appcolor.cardColor),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xffF87217),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                Text(
+                  '$quantity',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Appcolor.cardColor),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      quantity++;
+                    });
+                  },
+                  icon: const Icon(Icons.add, color: Appcolor.cardColor),
+                ),
+              ],
             ),
-            child: const Text('Add to Cart', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  final productToAdd = Map<String, dynamic>.from(widget.product);
+                  productToAdd['quantity'] = quantity;
+                  _cartService.addToCart(productToAdd);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Product added to cart'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Appcolor.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                ),
+                child: const Text('Add to Cart', style: TextStyle(color: Appcolor.cardColor, fontSize: 16)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

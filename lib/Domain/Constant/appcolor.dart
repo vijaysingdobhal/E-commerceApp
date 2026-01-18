@@ -8,5 +8,5 @@ class Appcolor {
   static const Color textColor = Color(0xFF1D1D1F);      // Dark grey for text
   static const Color secondaryTextColor = Color(0xFF8A8A8E); // Lighter grey for subtitles
   static const Color cardColor = Colors.white;
+  static const Color destructiveColor = Colors.red;
 }
-

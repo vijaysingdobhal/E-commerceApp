@@ -1,4 +1,5 @@
 import 'package:ecommerceapp/Api/CartService.dart';
+import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:ecommerceapp/Model/CartItem.dart';
 import 'package:flutter/material.dart';
 
@@ -35,12 +36,12 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Appcolor.textColor),
           onPressed: () {},
         ),
-        title: const Text('My Cart', style: TextStyle(color: Colors.black)),
+        title: const Text('My Cart', style: TextStyle(color: Appcolor.textColor)),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Appcolor.cardColor,
         elevation: 0,
       ),
       body: cartItems.isEmpty
@@ -66,6 +67,7 @@ class _CartScreenState extends State<CartScreen> {
     final product = cartItem.product;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Appcolor.cardColor,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -83,12 +85,12 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   Text(
                     product['title'],
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Appcolor.textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '\$${product['price']}',
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Appcolor.secondaryTextColor),
                   ),
                 ],
               ),
@@ -96,19 +98,19 @@ class _CartScreenState extends State<CartScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline),
+                  icon: const Icon(Icons.remove_circle_outline, color: Appcolor.textColor),
                   onPressed: () => _cartService.decreaseQuantity(cartItem),
                 ),
                 Text(
                   '${cartItem.quantity}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Appcolor.textColor),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
+                  icon: const Icon(Icons.add_circle_outline, color: Appcolor.textColor),
                   onPressed: () => _cartService.increaseQuantity(cartItem),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Appcolor.destructiveColor),
                   onPressed: () => _cartService.removeFromCart(cartItem),
                 ),
               ],
@@ -123,10 +125,10 @@ class _CartScreenState extends State<CartScreen> {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Appcolor.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Appcolor.secondaryTextColor.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 5,
           ),
@@ -138,12 +140,13 @@ class _CartScreenState extends State<CartScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Total Price', style: TextStyle(color: Colors.grey)),
+              const Text('Total Price', style: TextStyle(color: Appcolor.secondaryTextColor)),
               Text(
                 '\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
+                  color: Appcolor.textColor,
                 ),
               ),
             ],
@@ -151,7 +154,7 @@ class _CartScreenState extends State<CartScreen> {
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xffF87217),
+              backgroundColor: Appcolor.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -159,7 +162,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: const Text(
               'Checkout',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Appcolor.cardColor),
             ),
           ),
         ],

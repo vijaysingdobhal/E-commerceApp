@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Appcolor.cardColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center, // Changed from .center to .start
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 50),
 
@@ -52,24 +52,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Appcolor.textColor,
                     ),
                   ),
                   const SizedBox(height: 10),
 
                   // --- "Welcome back..." Subtitle ---
-                  Text(
+                  const Text(
                     "Welcome back you\'ve",
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey[600],
+                      color: Appcolor.secondaryTextColor,
                     ),
                   ),
-                  Text(
+                  const Text(
                     "been missed!",
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey[600],
+                      color: Appcolor.secondaryTextColor,
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       hintText: 'Email address',
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Appcolor.scaffoldbackgrount,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       hintText: 'Password',
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Appcolor.scaffoldbackgrount,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Appcolor.cardColor,
                         ),
                       ),
                     ),
@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
                           'or continue with',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Appcolor.secondaryTextColor),
                         ),
                       ),
                       Expanded(child: Divider(thickness: 1)),
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text(
                         "Not a member? ",
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Appcolor.textColor),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Appcolor.secondaryTextColor),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Image.asset(

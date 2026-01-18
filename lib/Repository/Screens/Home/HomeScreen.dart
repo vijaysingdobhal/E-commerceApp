@@ -1,6 +1,7 @@
 import 'package:ecommerceapp/Api/ApiService.dart';
 import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Api/FavoriteService.dart';
+import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -36,8 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xffF87217);
-
     return Scaffold(
       appBar: _buildAppBar(),
       body: SingleChildScrollView(
@@ -48,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildSearchBar(),
               const SizedBox(height: 24),
-              _buildSaleBanner(primaryColor),
+              _buildSaleBanner(),
               const SizedBox(height: 24),
               _buildCategoryList(),
               const SizedBox(height: 24),
@@ -65,11 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
-      leading: const Icon(Icons.grid_view_rounded, color: Colors.black),
+      backgroundColor: Appcolor.scaffoldbackgrount,
+      leading: const Icon(Icons.grid_view_rounded, color: Appcolor.textColor),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications_none_outlined, color: Colors.black),
+          icon: const Icon(Icons.notifications_none_outlined, color: Appcolor.textColor),
           onPressed: () {},
         ),
       ],
@@ -80,29 +79,29 @@ class _HomeScreenState extends State<HomeScreen> {
     return TextField(
       decoration: InputDecoration(
         hintText: "Search...",
-        hintStyle: TextStyle(color: Colors.grey.shade500),
-        prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 20),
-        suffixIcon: Icon(Icons.filter_list, color: Colors.grey.shade500, size: 20),
+        hintStyle: const TextStyle(color: Appcolor.secondaryTextColor),
+        prefixIcon: const Icon(Icons.search, color: Appcolor.secondaryTextColor, size: 20),
+        suffixIcon: const Icon(Icons.filter_list, color: Appcolor.secondaryTextColor, size: 20),
         filled: true,
-        fillColor: Colors.grey.shade200,
+        fillColor: Appcolor.cardColor,
         contentPadding: const EdgeInsets.all(8),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: const BorderSide(color: Appcolor.cardColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Appcolor.cardColor),
         ),
       ),
     );
   }
 
-  Widget _buildSaleBanner(Color primaryColor) {
+  Widget _buildSaleBanner() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xffFEECE0),
+        color: Appcolor.accentColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -114,21 +113,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Text(
                   "Super Sale",
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
+                      color: Appcolor.textColor, fontWeight: FontWeight.bold),
                 ),
                 const Text(
                   "Discount up to 50%",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Appcolor.textColor,
                   ),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
+                    backgroundColor: Appcolor.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -177,15 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xffF87217) : Colors.grey.shade200,
+                    color: isSelected ? Appcolor.primaryColor : Appcolor.cardColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Icon(category['icon'], color: isSelected ? Colors.white : Colors.black54),
+                  child: Icon(category['icon'], color: isSelected ? Appcolor.cardColor : Appcolor.textColor),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   category['name'],
-                  style: TextStyle(fontSize: 12, color: isSelected ? const Color(0xffF87217) : Colors.black54),
+                  style: TextStyle(fontSize: 12, color: isSelected ? Appcolor.primaryColor : Appcolor.secondaryTextColor),
                 ),
               ],
             ),
@@ -202,13 +201,13 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Appcolor.textColor),
         ),
         TextButton(
           onPressed: onSeeAll,
           child: const Text(
             "See all",
-            style: TextStyle(color: Color(0xffF87217)),
+            style: TextStyle(color: Appcolor.primaryColor),
           ),
         ),
       ],
@@ -285,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isFavorite = _favoriteService.isFavorite(product);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: Appcolor.cardColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Stack(
@@ -314,6 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 14,
+                          color: Appcolor.textColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -326,6 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                              color: Appcolor.textColor,
                             ),
                           ),
                           const Spacer(),
@@ -354,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
-                  color: Color(0xffF87217),
+                  color: Appcolor.primaryColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(15),
                     bottomLeft: Radius.circular(10),
@@ -362,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.white,
+                  color: Appcolor.cardColor,
                   size: 16,
                 ),
               ),
@@ -380,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 1),
+        border: Border.all(color: Appcolor.cardColor, width: 1),
       ),
     );
   }

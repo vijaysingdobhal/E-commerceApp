@@ -2,6 +2,7 @@ import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:flutter/material.dart';
 
+import 'Domain/Constant/appcolor.dart';
 import 'Repository/Screens/Splash/SplashScreen.dart';
 
 void main() async {
@@ -21,7 +22,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'E-APP',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primaryColor: Appcolor.primaryColor,
+        colorScheme: ColorScheme.fromSeed(seedColor: Appcolor.primaryColor),
+        scaffoldBackgroundColor: Appcolor.scaffoldbackgrount,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Appcolor.textColor),
+          bodyMedium: TextStyle(color: Appcolor.secondaryTextColor),
+        ),
         useMaterial3: false,
       ),
       home: SplashScreen(),

@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:ecommerceapp/Repository/Screens/Home/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import '../Card/CartScreen.dart';
@@ -23,14 +24,12 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xffF87217);
-
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Appcolor.primaryColor,
+        unselectedItemColor: Appcolor.secondaryTextColor,
         selectedFontSize: 0,
         unselectedFontSize: 0,
         elevation: 0,
@@ -40,7 +39,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             icon: _BottomNavIcon(
               iconData: Icons.home,
               isSelected: _currentIndex == 0,
-              color: _currentIndex == 0 ? primaryColor : Colors.grey,
+              color: _currentIndex == 0 ? Appcolor.primaryColor : Appcolor.secondaryTextColor,
             ),
             label: '',
           ),
@@ -48,7 +47,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             icon: _BottomNavIcon(
               iconData: Icons.shopping_cart_outlined,
               isSelected: _currentIndex == 1,
-              color: _currentIndex == 1 ? primaryColor : Colors.grey,
+              color: _currentIndex == 1 ? Appcolor.primaryColor : Appcolor.secondaryTextColor,
             ),
             label: '',
           ),
@@ -56,7 +55,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             icon: _BottomNavIcon(
               iconData: Icons.favorite_border,
               isSelected: _currentIndex == 2,
-              color: _currentIndex == 2 ? primaryColor : Colors.grey,
+              color: _currentIndex == 2 ? Appcolor.primaryColor : Appcolor.secondaryTextColor,
             ),
             label: '',
           ),
@@ -64,7 +63,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             icon: _BottomNavIcon(
               iconData: Icons.person_outline,
               isSelected: _currentIndex == 3,
-              color: _currentIndex == 3 ? primaryColor : Colors.grey,
+              color: _currentIndex == 3 ? Appcolor.primaryColor : Appcolor.secondaryTextColor,
             ),
             label: '',
           ),
@@ -108,7 +107,7 @@ class _BottomNavIcon extends StatelessWidget {
             height: 5,
             width: 5,
             decoration: const BoxDecoration(
-              color: Color(0xffF87217),
+              color: Appcolor.primaryColor,
               shape: BoxShape.circle,
             ),
           )
