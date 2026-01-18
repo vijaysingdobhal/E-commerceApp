@@ -67,53 +67,113 @@ class _CartScreenState extends State<CartScreen> {
     final product = cartItem.product;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 0,
       color: Appcolor.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            Image.network(
-              product['image'],
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.network(
+                product['image'],
+                width: 80,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product['title'],
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Appcolor.textColor),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '\$${product['price']}',
-                    style: const TextStyle(color: Appcolor.secondaryTextColor),
-                  ),
-                ],
+              child: SizedBox(
+                height: 100,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product['title'],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Appcolor.textColor),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                product['category'] ?? "Watches",
+                                style: const TextStyle(
+                                    fontSize: 14, color: Appcolor.secondaryTextColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => _cartService.removeFromCart(cartItem),
+                          child: const Icon(Icons.delete_outline, color: Appcolor.primaryColor, size: 24),
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          '\$${product['price']}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Appcolor.textColor),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Appcolor.scaffoldbackgrount,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () => _cartService.decreaseQuantity(cartItem),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                  child: Icon(Icons.remove, size: 16, color: Appcolor.secondaryTextColor),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Text(
+                                  '${cartItem.quantity}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 16, color: Appcolor.textColor),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => _cartService.increaseQuantity(cartItem),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                  child: Icon(Icons.add, size: 16, color: Appcolor.secondaryTextColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Appcolor.textColor),
-                  onPressed: () => _cartService.decreaseQuantity(cartItem),
-                ),
-                Text(
-                  '${cartItem.quantity}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Appcolor.textColor),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Appcolor.textColor),
-                  onPressed: () => _cartService.increaseQuantity(cartItem),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Appcolor.destructiveColor),
-                  onPressed: () => _cartService.removeFromCart(cartItem),
-                ),
-              ],
             ),
           ],
         ),

@@ -68,7 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
       leading: const Icon(Icons.grid_view_rounded, color: Appcolor.textColor),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications_none_outlined, color: Appcolor.textColor),
+          icon: const Icon(
+            Icons.notifications_none_outlined,
+            color: Appcolor.textColor,
+          ),
           onPressed: () {},
         ),
       ],
@@ -80,8 +83,16 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: InputDecoration(
         hintText: "Search...",
         hintStyle: const TextStyle(color: Appcolor.secondaryTextColor),
-        prefixIcon: const Icon(Icons.search, color: Appcolor.secondaryTextColor, size: 20),
-        suffixIcon: const Icon(Icons.filter_list, color: Appcolor.secondaryTextColor, size: 20),
+        prefixIcon: const Icon(
+          Icons.search,
+          color: Appcolor.secondaryTextColor,
+          size: 20,
+        ),
+        suffixIcon: const Icon(
+          Icons.filter_list,
+          color: Appcolor.secondaryTextColor,
+          size: 20,
+        ),
         filled: true,
         fillColor: Appcolor.cardColor,
         contentPadding: const EdgeInsets.all(8),
@@ -113,12 +124,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Text(
                   "Super Sale",
                   style: TextStyle(
-                      color: Appcolor.textColor, fontWeight: FontWeight.bold),
+                    color: Appcolor.textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                  ),
                 ),
                 const Text(
-                  "Discount up to 50%",
+                  "Discount up \nto 50%",
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                     color: Appcolor.textColor,
                   ),
@@ -176,15 +190,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected ? Appcolor.primaryColor : Appcolor.cardColor,
+                    color: isSelected
+                        ? Appcolor.primaryColor
+                        : Appcolor.cardColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Icon(category['icon'], color: isSelected ? Appcolor.cardColor : Appcolor.textColor),
+                  child: Icon(
+                    category['icon'],
+                    color: isSelected ? Appcolor.cardColor : Appcolor.textColor,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   category['name'],
-                  style: TextStyle(fontSize: 12, color: isSelected ? Appcolor.primaryColor : Appcolor.secondaryTextColor),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected
+                        ? Appcolor.primaryColor
+                        : Appcolor.secondaryTextColor,
+                  ),
                 ),
               ],
             ),
@@ -195,13 +219,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSectionTitle({required String title, required VoidCallback onSeeAll}) {
+  Widget _buildSectionTitle({
+    required String title,
+    required VoidCallback onSeeAll,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Appcolor.textColor),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Appcolor.textColor,
+          ),
         ),
         TextButton(
           onPressed: onSeeAll,
@@ -241,11 +272,12 @@ class _HomeScreenState extends State<HomeScreen> {
             // The API does not have a 'shoes' or 'watches' category, so that will result in an empty list.
             // This is expected given the API.
             return apiCategory == selectedCategory;
-
           }).toList();
 
           if (filteredProducts.isEmpty) {
-            return const Center(child: Text("No products found in this category"));
+            return const Center(
+              child: Text("No products found in this category"),
+            );
           }
 
           return GridView.builder(
@@ -265,13 +297,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailScreen(product: product),
+                      builder: (context) =>
+                          ProductDetailScreen(product: product),
                     ),
                   );
                 },
-                child: _buildProductItem(
-                  product: product,
-                ),
+                child: _buildProductItem(product: product),
               );
             },
           );
