@@ -1,6 +1,8 @@
-
 import 'package:ecommerceapp/Api/UserService.dart';
 import 'package:ecommerceapp/Model/User.dart';
+import 'package:ecommerceapp/Repository/Screens/User/MyOrdersScreen.dart';
+import 'package:ecommerceapp/Repository/Screens/User/SettingsScreen.dart';
+import 'package:ecommerceapp/Repository/Screens/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
 
 class UserScreen extends StatelessWidget {
@@ -39,9 +41,21 @@ class UserScreen extends StatelessWidget {
               style: const TextStyle(color: Colors.grey, fontSize: 16),
             ),
             const SizedBox(height: 32),
-            _buildProfileOption(Icons.list_alt, 'My Orders', () {}),
-            _buildProfileOption(Icons.settings, 'Settings', () {}),
-            _buildProfileOption(Icons.logout, 'Logout', () {}),
+            _buildProfileOption(Icons.list_alt, 'My Orders', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyOrdersScreen()),
+              );
+            }),
+            _buildProfileOption(Icons.settings, 'Settings', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            }),
+            _buildProfileOption(Icons.logout, 'Logout', () {
+              _showLogoutConfirmationDialog(context);
+            }),
           ],
         ),
       ),
@@ -54,6 +68,37 @@ class UserScreen extends StatelessWidget {
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: onTap,
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

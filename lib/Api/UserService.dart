@@ -5,7 +5,7 @@ class UserService {
     return User(
       name: 'Syed Noman',
       email: 'syed.noman@example.com',
-      avatarUrl: 'https://via.placeholder.com/150',
+      avatarUrl: 'https://placehold.co/150',
     );
   }
 }

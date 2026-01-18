@@ -37,7 +37,7 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Appcolor.textColor),
-          onPressed: () {},
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('My Cart', style: TextStyle(color: Appcolor.textColor)),
         centerTitle: true,
@@ -183,48 +183,99 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildCheckoutSection() {
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(24.0),
+      decoration: const BoxDecoration(
         color: Appcolor.cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: Appcolor.secondaryTextColor.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30.0),
+          topRight: Radius.circular(30.0),
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Total Price', style: TextStyle(color: Appcolor.secondaryTextColor)),
-              Text(
-                '\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Appcolor.textColor,
+          Container(
+            decoration: BoxDecoration(
+              color: Appcolor.scaffoldbackgrount,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter Discount Code',
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(color: Appcolor.secondaryTextColor),
+                      ),
+                      style: TextStyle(color: Appcolor.textColor),
+                    ),
+                  ),
                 ),
-              ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Apply',
+                    style: TextStyle(
+                        color: Appcolor.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                )
+              ],
+            ),
+          ),
+          const SizedBox(height: 24.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Subtotal',
+                  style: TextStyle(
+                      fontSize: 16, color: Appcolor.secondaryTextColor)),
+              Text('\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Appcolor.textColor)),
             ],
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Appcolor.primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-            ),
-            child: const Text(
-              'Checkout',
-              style: TextStyle(color: Appcolor.cardColor),
-            ),
+          const SizedBox(height: 12.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Total',
+                  style: TextStyle(
+                      fontSize: 16, color: Appcolor.secondaryTextColor)),
+              Text('\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Appcolor.textColor)),
+            ],
           ),
+          const SizedBox(height: 24.0),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Appcolor.primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+              onPressed: () {},
+              child: const Text(
+                'Checkout',
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
         ],
       ),
     );
