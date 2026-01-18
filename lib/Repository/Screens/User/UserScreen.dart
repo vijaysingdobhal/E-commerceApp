@@ -5,6 +5,8 @@ import 'package:ecommerceapp/Repository/Screens/User/SettingsScreen.dart';
 import 'package:ecommerceapp/Repository/Screens/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
 
+import '../BottomNov/BottomNavScreen.dart';
+
 class UserScreen extends StatelessWidget {
   final UserService _userService = UserService();
 
@@ -16,7 +18,16 @@ class UserScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BottomNavScreen()),
+            );
+          },
+        ),
+        title: const Text('My Profile', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,

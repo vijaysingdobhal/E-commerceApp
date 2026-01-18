@@ -2,6 +2,10 @@ import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart';
 import 'package:flutter/material.dart';
 
+import '../../../Domain/Constant/appcolor.dart';
+import '../BottomNov/BottomNavScreen.dart';
+
+
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
 
@@ -35,8 +39,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back, color: Appcolor.textColor),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BottomNavScreen()),
+            );
+          },
         ),
         title: const Text(
           'Favorites',

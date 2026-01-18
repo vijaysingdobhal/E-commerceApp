@@ -2,6 +2,7 @@ import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:ecommerceapp/Model/CartItem.dart';
 import 'package:flutter/material.dart';
+import '../BottomNov/BottomNavScreen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -37,7 +38,12 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Appcolor.textColor),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BottomNavScreen()),
+            );
+          },
         ),
         title: const Text('My Cart', style: TextStyle(color: Appcolor.textColor)),
         centerTitle: true,
