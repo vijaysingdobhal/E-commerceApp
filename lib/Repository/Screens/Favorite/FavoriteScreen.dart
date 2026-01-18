@@ -1,4 +1,3 @@
-
 import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart';
 import 'package:flutter/material.dart';
@@ -12,27 +11,32 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
   final FavoriteService _favoriteService = FavoriteService();
-  late Future<List<dynamic>> _favorites;
 
   @override
   void initState() {
     super.initState();
-    _loadFavorites();
+    _favoriteService.addListener(_onFavoritesChanged);
   }
 
-  void _loadFavorites() {
-    setState(() {
-      _favorites = _favoriteService.getFavorites();
-    });
+  @override
+  void dispose() {
+    _favoriteService.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final favorites = _favoriteService.favoriteItems;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {},
         ),
         title: const Text(
           'Favorites',
@@ -42,27 +46,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _favorites,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No favorite products found"));
-          } else {
-            final favorites = snapshot.data!;
-            return ListView.builder(
+      body: favorites.isEmpty
+          ? const Center(child: Text("No favorite products found"))
+          : ListView.builder(
               itemCount: favorites.length,
               itemBuilder: (context, index) {
                 final product = favorites[index];
                 return _buildFavoriteItem(product);
               },
-            );
-          }
-        },
-      ),
+            ),
     );
   }
 
@@ -77,9 +69,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           subtitle: Text('\$${product['price']}', style: const TextStyle(color: Colors.grey)),
           trailing: IconButton(
             icon: const Icon(Icons.favorite, color: Colors.red),
-            onPressed: () async {
-              await _favoriteService.removeFromFavorites(product);
-              _loadFavorites();
+            onPressed: () {
+              _favoriteService.toggleFavorite(product);
             },
           ),
           onTap: () {
@@ -88,7 +79,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               MaterialPageRoute(
                 builder: (context) => ProductDetailScreen(product: product),
               ),
-            ).then((_) => _loadFavorites());
+            );
           },
         ),
       ),

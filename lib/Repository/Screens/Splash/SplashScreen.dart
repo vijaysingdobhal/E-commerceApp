@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../../Domain/Constant/appcolor.dart';
-import '../../Widget/UIhelper.dart';
 import '../login/LoginScreen.dart';
+import 'dart:async';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -14,7 +13,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () {
+    // Navigate after the animation duration
+    Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -29,7 +29,23 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [UiHelper.CostomImage(img: "logo.png")],
+          children: [
+            Lottie.asset(
+              'Assets/Images/cart_animation.json', // Your animation file path
+              width: 250,
+              height: 250,
+              fit: BoxFit.fill,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'E-Commerce App',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Appcolor.primaryColor, // Use a color from your theme
+              ),
+            )
+          ],
         ),
       ),
     );

@@ -1,4 +1,3 @@
-
 import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:flutter/material.dart';
@@ -21,23 +20,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _checkFavoriteStatus();
+    _isFavorite = _favoriteService.isFavorite(widget.product);
+    _favoriteService.addListener(_onFavoriteChanged);
   }
 
-  void _checkFavoriteStatus() async {
-    bool isFavorite = await _favoriteService.isFavorite(widget.product);
+  @override
+  void dispose() {
+    _favoriteService.removeListener(_onFavoriteChanged);
+    super.dispose();
+  }
+
+  void _onFavoriteChanged() {
     setState(() {
-      _isFavorite = isFavorite;
+      _isFavorite = _favoriteService.isFavorite(widget.product);
     });
   }
 
-  void _toggleFavorite() async {
-    if (_isFavorite) {
-      await _favoriteService.removeFromFavorites(widget.product);
-    } else {
-      await _favoriteService.addToFavorites(widget.product);
-    }
-    _checkFavoriteStatus();
+  void _toggleFavorite() {
+    _favoriteService.toggleFavorite(widget.product);
   }
 
   @override
@@ -142,11 +142,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           const Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text('Specifications content goes here.'),
                           ),
                           const Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text('Reviews content goes here.'),
                           ),
                         ],

@@ -196,13 +196,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildSocialIcon(
-                          'Assets/images/google_icon.png'), // Replace with your asset path
+                          'Assets/Images/google_icon.png'), // Replace with your asset path
                       const SizedBox(width: 20),
                       _buildSocialIcon(
-                          'Assets/images/apple_icon.png'), // Replace with your asset path
+                          'Assets/Images/apple_icon.png'), // Replace with your asset path
                       const SizedBox(width: 20),
                       _buildSocialIcon(
-                          'Assets/images/facebook_icon.png'), // Replace with your asset path
+                          'Assets/Images/facebook_icon.png'), // Replace with your asset path
                     ],
                   ),
                   const SizedBox(height: 40),

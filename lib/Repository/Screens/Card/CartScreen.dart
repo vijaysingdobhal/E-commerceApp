@@ -1,4 +1,3 @@
-
 import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Model/CartItem.dart';
 import 'package:flutter/material.dart';
@@ -37,12 +36,9 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {},
         ),
-        title: const Text(
-          'My Cart',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('My Cart', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -74,15 +70,26 @@ class _CartScreenState extends State<CartScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Image.network(product['image'], width: 80, height: 80, fit: BoxFit.cover),
+            Image.network(
+              product['image'],
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    product['title'],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text('\$${product['price']}', style: const TextStyle(color: Colors.grey)),
+                  Text(
+                    '\$${product['price']}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
                 ],
               ),
             ),
@@ -92,7 +99,10 @@ class _CartScreenState extends State<CartScreen> {
                   icon: const Icon(Icons.remove_circle_outline),
                   onPressed: () => _cartService.decreaseQuantity(cartItem),
                 ),
-                Text('${cartItem.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  '${cartItem.quantity}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: () => _cartService.increaseQuantity(cartItem),
@@ -131,7 +141,10 @@ class _CartScreenState extends State<CartScreen> {
               const Text('Total Price', style: TextStyle(color: Colors.grey)),
               Text(
                 '\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ],
           ),
@@ -144,7 +157,10 @@ class _CartScreenState extends State<CartScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
             ),
-            child: const Text('Checkout', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Checkout',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
