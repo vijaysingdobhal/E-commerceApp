@@ -4,7 +4,8 @@ A small e-commerce application built with Flutter that demonstrates a complete u
 
 ## Screenshots
 
-<img alt="App Screenshot" src="Assets/Images/screenshot.png"/>
+![App Screenshot](Assets/Images/screenshot.png)![App Screenshot](Assets/Images/screenshot1.png)
+
 
 ## Features
 
