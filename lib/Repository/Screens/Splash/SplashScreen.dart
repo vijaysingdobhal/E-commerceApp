@@ -1,18 +1,16 @@
+import 'package:ecommerceapp/counter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../Domain/Constant/appcolor.dart';
 import '../login/LoginScreen.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final counter = ref.watch(counterProvider);
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
     // Navigate after the animation duration
     Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(
@@ -20,10 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.scaffoldbackgrount,
       body: Center(
@@ -44,9 +39,22 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontWeight: FontWeight.bold,
                 color: Appcolor.primaryColor, // Use a color from your theme
               ),
-            )
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Counter: $counter',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Appcolor.primaryColor, // Use a color from your theme
+              ),
+            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => ref.read(counterProvider.notifier).state++,
+        child: Icon(Icons.add),
       ),
     );
   }

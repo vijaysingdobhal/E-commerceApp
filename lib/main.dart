@@ -1,15 +1,11 @@
-import 'package:ecommerceapp/Api/CartService.dart';
-import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'Domain/Constant/appcolor.dart';
 import 'Repository/Screens/Splash/SplashScreen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await CartService().init();
-  await FavoriteService().init();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,97 +1,89 @@
 import 'dart:convert';
 import 'package:ecommerceapp/Model/CartItem.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CartService {
-  static final CartService _instance = CartService._internal();
-
-  factory CartService() {
-    return _instance;
-  }
-
-  CartService._internal();
-
-  final List<CartItem> _cartItems = [];
-  final List<VoidCallback> _listeners = [];
+class CartService extends Notifier<List<CartItem>> {
   static const String _cartKey = 'cartItems';
-
-  List<CartItem> get cartItems => _cartItems;
 
   Future<void> init() async {
     await _loadCart();
   }
 
-  void addListener(VoidCallback listener) {
-    _listeners.add(listener);
-  }
-
-  void removeListener(VoidCallback listener) {
-    _listeners.remove(listener);
-  }
-
-  void notifyListeners() {
-    for (var listener in _listeners) {
-      listener();
-    }
-  }
-
-  Future<void> _saveCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> cartJson = _cartItems.map((item) => json.encode(item.toJson())).toList();
-    await prefs.setStringList(_cartKey, cartJson);
+  @override
+  List<CartItem> build() {
+    return [];
   }
 
   Future<void> _loadCart() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String>? cartJson = prefs.getStringList(_cartKey);
     if (cartJson != null) {
-      _cartItems.clear();
-      _cartItems.addAll(cartJson.map((item) => CartItem.fromJson(json.decode(item))));
-      notifyListeners();
+      state = cartJson.map((item) => CartItem.fromJson(json.decode(item))).toList();
+    } else {
+      state = [];
     }
+  }
+
+  Future<void> _saveCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> cartJson = state.map((item) => json.encode(item.toJson())).toList();
+    await prefs.setStringList(_cartKey, cartJson);
   }
 
   void addToCart(dynamic product) {
     final int quantityToAdd = product['quantity'] as int? ?? 1;
-    for (var item in _cartItems) {
-      if (item.product['id'] == product['id']) {
-        item.quantity += quantityToAdd;
-        _saveCart();
-        notifyListeners();
-        return;
-      }
+    final existingItemIndex = state.indexWhere((item) => item.product['id'] == product['id']);
+
+    if (existingItemIndex != -1) {
+      final updatedList = List<CartItem>.from(state);
+      final existingItem = updatedList[existingItemIndex];
+      updatedList[existingItemIndex] = CartItem(
+        product: existingItem.product,
+        quantity: existingItem.quantity + quantityToAdd,
+      );
+      state = updatedList;
+    } else {
+      state = [...state, CartItem(product: product, quantity: quantityToAdd)];
     }
-    _cartItems.add(CartItem(product: product, quantity: quantityToAdd));
     _saveCart();
-    notifyListeners();
   }
 
   void removeFromCart(CartItem cartItem) {
-    _cartItems.remove(cartItem);
+    state = state.where((item) => item.product['id'] != cartItem.product['id']).toList();
     _saveCart();
-    notifyListeners();
   }
 
   void increaseQuantity(CartItem cartItem) {
-    cartItem.quantity++;
+    state = [
+      for (final item in state)
+        if (item.product['id'] == cartItem.product['id'])
+          CartItem(product: item.product, quantity: item.quantity + 1)
+        else
+          item
+    ];
     _saveCart();
-    notifyListeners();
   }
 
   void decreaseQuantity(CartItem cartItem) {
-    if (cartItem.quantity > 1) {
-      cartItem.quantity--;
+    final currentItem = state.firstWhere((item) => item.product['id'] == cartItem.product['id']);
+    if (currentItem.quantity > 1) {
+      state = [
+        for (final item in state)
+          if (item.product['id'] == cartItem.product['id'])
+            CartItem(product: item.product, quantity: item.quantity - 1)
+          else
+            item
+      ];
     } else {
-      _cartItems.remove(cartItem);
+      removeFromCart(cartItem);
     }
     _saveCart();
-    notifyListeners();
   }
 
   double getTotalPrice() {
     double total = 0;
-    for (var item in _cartItems) {
+    for (var item in state) {
       final price = item.product['price'];
       if (price is num) {
         total += price * item.quantity;
@@ -100,3 +92,21 @@ class CartService {
     return total;
   }
 }
+
+final cartServiceProvider = NotifierProvider<CartService, List<CartItem>>(CartService.new);
+
+final cartFutureProvider = FutureProvider<void>((ref) async {
+  await ref.read(cartServiceProvider.notifier).init();
+});
+
+final cartTotalProvider = Provider<double>((ref) {
+  final cart = ref.watch(cartServiceProvider);
+  double total = 0;
+  for (var item in cart) {
+    final price = item.product['price'];
+    if (price is num) {
+      total += price * item.quantity;
+    }
+  }
+  return total;
+});

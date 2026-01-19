@@ -2,37 +2,15 @@ import 'package:ecommerceapp/Api/CartService.dart';
 import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
 import 'package:ecommerceapp/Model/CartItem.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../BottomNov/BottomNavScreen.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends ConsumerWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
-  _CartScreenState createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  final CartService _cartService = CartService();
-
-  @override
-  void initState() {
-    super.initState();
-    _cartService.addListener(_onCartChanged);
-  }
-
-  @override
-  void dispose() {
-    _cartService.removeListener(_onCartChanged);
-    super.dispose();
-  }
-
-  void _onCartChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cartItems = _cartService.cartItems;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartAsyncValue = ref.watch(cartFutureProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,26 +28,38 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: Appcolor.cardColor,
         elevation: 0,
       ),
-      body: cartItems.isEmpty
-          ? const Center(child: Text("Your cart is empty"))
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cartItems.length,
-                    itemBuilder: (context, index) {
-                      final cartItem = cartItems[index];
-                      return _buildCartItem(cartItem);
-                    },
-                  ),
+      body: cartAsyncValue.when(
+        data: (_) {
+          final cartItems = ref.watch(cartServiceProvider);
+          final cartNotifier = ref.read(cartServiceProvider.notifier);
+          final cartTotal = ref.watch(cartTotalProvider);
+
+          if (cartItems.isEmpty) {
+            return const Center(child: Text("Your cart is empty"));
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: cartItems.length,
+                  itemBuilder: (context, index) {
+                    final cartItem = cartItems[index];
+                    return _buildCartItem(context, cartItem, cartNotifier);
+                  },
                 ),
-                _buildCheckoutSection(),
-              ],
-            ),
+              ),
+              _buildCheckoutSection(cartTotal),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text("Error: $err")),
+      ),
     );
   }
 
-  Widget _buildCartItem(CartItem cartItem) {
+  Widget _buildCartItem(BuildContext context, CartItem cartItem, CartService cartNotifier) {
     final product = cartItem.product;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -126,7 +116,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         InkWell(
-                          onTap: () => _cartService.removeFromCart(cartItem),
+                          onTap: () => cartNotifier.removeFromCart(cartItem),
                           child: const Icon(Icons.delete_outline, color: Appcolor.primaryColor, size: 24),
                         )
                       ],
@@ -151,7 +141,7 @@ class _CartScreenState extends State<CartScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               InkWell(
-                                onTap: () => _cartService.decreaseQuantity(cartItem),
+                                onTap: () => cartNotifier.decreaseQuantity(cartItem),
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                   child: Icon(Icons.remove, size: 16, color: Appcolor.secondaryTextColor),
@@ -166,7 +156,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               InkWell(
-                                onTap: () => _cartService.increaseQuantity(cartItem),
+                                onTap: () => cartNotifier.increaseQuantity(cartItem),
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                   child: Icon(Icons.add, size: 16, color: Appcolor.secondaryTextColor),
@@ -187,7 +177,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCheckoutSection() {
+  Widget _buildCheckoutSection(double cartTotal) {
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: const BoxDecoration(
@@ -240,7 +230,7 @@ class _CartScreenState extends State<CartScreen> {
               const Text('Subtotal',
                   style: TextStyle(
                       fontSize: 16, color: Appcolor.secondaryTextColor)),
-              Text('\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
+              Text('\$${cartTotal.toStringAsFixed(2)}',
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -254,7 +244,7 @@ class _CartScreenState extends State<CartScreen> {
               const Text('Total',
                   style: TextStyle(
                       fontSize: 16, color: Appcolor.secondaryTextColor)),
-              Text('\$${_cartService.getTotalPrice().toStringAsFixed(2)}',
+              Text('\$${cartTotal.toStringAsFixed(2)}',
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

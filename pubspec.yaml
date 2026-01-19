@@ -39,6 +39,8 @@ dependencies:
   flutter_lints: ^6.0.0
   lottie: ^3.3.2
   flutter_launcher_icons: ^0.14.4
+  flutter_riverpod: ^3.2.0
+  init: ^1.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,48 +1,26 @@
-import 'package:ecommerceapp/Api/CartService.dart';
-import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
+import 'package:ecommerceapp/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
-class ProductDetailScreen extends StatefulWidget {
+import '../../../Api/CartService.dart';
+import '../../../Api/FavoriteService.dart';
+
+// This provider is specific to this screen, so it can be defined here.
+final quantityProvider = StateProvider<int>((ref) => 1);
+
+
+class ProductDetailScreen extends ConsumerWidget {
   final dynamic product;
 
   const ProductDetailScreen({Key? key, required this.product}) : super(key: key);
 
   @override
-  _ProductDetailScreenState createState() => _ProductDetailScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavorite = ref.watch(isFavoriteProvider(product));
+    final quantity = ref.watch(quantityProvider);
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  int quantity = 1;
-  bool _isFavorite = false;
-  final FavoriteService _favoriteService = FavoriteService();
-  final CartService _cartService = CartService();
-
-  @override
-  void initState() {
-    super.initState();
-    _isFavorite = _favoriteService.isFavorite(widget.product);
-    _favoriteService.addListener(_onFavoriteChanged);
-  }
-
-  @override
-  void dispose() {
-    _favoriteService.removeListener(_onFavoriteChanged);
-    super.dispose();
-  }
-
-  void _onFavoriteChanged() {
-    setState(() {
-      _isFavorite = _favoriteService.isFavorite(widget.product);
-    });
-  }
-
-  void _toggleFavorite() {
-    _favoriteService.toggleFavorite(widget.product);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.cardColor,
       appBar: AppBar(
@@ -58,8 +36,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border, color: Appcolor.primaryColor),
-            onPressed: _toggleFavorite,
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: Appcolor.primaryColor),
+            onPressed: () {
+              ref.read(favoriteServiceProvider.notifier).toggleFavorite(product);
+            },
           ),
         ],
       ),
@@ -71,14 +51,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               Center(
                 child: Image.network(
-                  widget.product['image'],
+                  product['image'],
                   height: 300,
                   fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 20),
               Text(
-                widget.product['title'],
+                product['title'],
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Appcolor.textColor),
               ),
               const SizedBox(height: 10),
@@ -144,7 +124,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                             widget.product['description'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                             product['description'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                             ),
                           ),
                           const Padding(
@@ -165,7 +145,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _buildBottomBar(context, ref, product),
     );
   }
 
@@ -181,7 +161,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(BuildContext context, WidgetRef ref, dynamic product) {
+    final quantity = ref.watch(quantityProvider);
+    final cartNotifier = ref.read(cartServiceProvider.notifier);
+
     return Container(
       padding: const EdgeInsets.all(12.0),
       child: Container(
@@ -198,9 +181,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 IconButton(
                   onPressed: () {
                     if (quantity > 1) {
-                      setState(() {
-                        quantity--;
-                      });
+                      ref.read(quantityProvider.notifier).state--;
                     }
                   },
                   icon: const Icon(Icons.remove, color: Appcolor.cardColor),
@@ -211,9 +192,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 IconButton(
                   onPressed: () {
-                    setState(() {
-                      quantity++;
-                    });
+                    ref.read(quantityProvider.notifier).state++;
                   },
                   icon: const Icon(Icons.add, color: Appcolor.cardColor),
                 ),
@@ -222,9 +201,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  final productToAdd = Map<String, dynamic>.from(widget.product);
+                  final productToAdd = Map<String, dynamic>.from(product);
                   productToAdd['quantity'] = quantity;
-                  _cartService.addToCart(productToAdd);
+                  cartNotifier.addToCart(productToAdd);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Product added to cart'),

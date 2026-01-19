@@ -1,42 +1,19 @@
-import 'package:ecommerceapp/Api/ApiService.dart';
-import 'package:ecommerceapp/Api/CartService.dart';
-import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:ecommerceapp/Domain/Constant/appcolor.dart';
-import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart';
+import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart' hide isFavoriteProvider;
+import 'package:ecommerceapp/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
+import '../../../Api/FavoriteService.dart';
+
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productsAsyncValue = ref.watch(productsProvider);
+    final selectedCategory = ref.watch(selectedCategoryProvider);
 
-class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<dynamic>> _products;
-  final CartService _cartService = CartService();
-  final FavoriteService _favoriteService = FavoriteService();
-  String _selectedCategory = 'All';
-
-  @override
-  void initState() {
-    super.initState();
-    _products = ApiService().getAllProducts();
-    _favoriteService.addListener(_onFavoritesChanged);
-  }
-
-  @override
-  void dispose() {
-    _favoriteService.removeListener(_onFavoritesChanged);
-    super.dispose();
-  }
-
-  void _onFavoritesChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
       body: SingleChildScrollView(
@@ -49,11 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               _buildSaleBanner(),
               const SizedBox(height: 24),
-              _buildCategoryList(),
+              _buildCategoryList(ref, selectedCategory),
               const SizedBox(height: 24),
               _buildSectionTitle(title: "Special For You", onSeeAll: () {}),
               const SizedBox(height: 16),
-              _buildProductGrid(),
+              _buildProductGrid(productsAsyncValue, selectedCategory),
             ],
           ),
         ),
@@ -162,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildCategoryList(WidgetRef ref, String selectedCategory) {
     final List<Map<String, dynamic>> categories = [
       {'icon': Icons.apps, 'name': 'All'},
       {'icon': Icons.directions_walk, 'name': 'Shoes'},
@@ -178,12 +155,10 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          final isSelected = category['name'] == _selectedCategory;
+          final isSelected = category['name'] == selectedCategory;
           return GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedCategory = category['name'];
-              });
+              ref.read(selectedCategoryProvider.notifier).state = category['name'];
             },
             child: Column(
               children: [
@@ -219,10 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSectionTitle({
-    required String title,
-    required VoidCallback onSeeAll,
-  }) {
+  Widget _buildSectionTitle({required String title, required VoidCallback onSeeAll}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -245,163 +217,157 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductGrid() {
-    return FutureBuilder<List<dynamic>>(
-      future: _products,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No products found"));
-        } else {
-          final products = snapshot.data!;
-          final filteredProducts = products.where((product) {
-            if (_selectedCategory == 'All') {
-              return true;
-            }
-            // The API categories are lowercase
-            String apiCategory = product['category'].toString().toLowerCase();
-            String selectedCategory = _selectedCategory.toLowerCase();
+  Widget _buildProductGrid(AsyncValue<List<dynamic>> productsAsyncValue, String selectedCategory) {
+    return productsAsyncValue.when(
+      data: (products) {
+        final filteredProducts = products.where((product) {
+          if (selectedCategory == 'All') {
+            return true;
+          }
+          String apiCategory = product['category'].toString().toLowerCase();
+          String currentCategory = selectedCategory.toLowerCase();
 
-            if (selectedCategory == "men's") {
-              selectedCategory = "men's clothing";
-            }
-
-            // The API does not have a 'shoes' or 'watches' category, so that will result in an empty list.
-            // This is expected given the API.
-            return apiCategory == selectedCategory;
-          }).toList();
-
-          if (filteredProducts.isEmpty) {
-            return const Center(
-              child: Text("No products found in this category"),
-            );
+          if (currentCategory == "men's") {
+            currentCategory = "men's clothing";
           }
 
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: filteredProducts.length,
-            itemBuilder: (context, index) {
-              final product = filteredProducts[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProductDetailScreen(product: product),
-                    ),
-                  );
-                },
-                child: _buildProductItem(product: product),
-              );
-            },
+          return apiCategory == currentCategory;
+        }).toList();
+
+        if (filteredProducts.isEmpty) {
+          return const Center(
+            child: Text("No products found in this category"),
           );
         }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: filteredProducts.length,
+          itemBuilder: (context, index) {
+            final product = filteredProducts[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetailScreen(product: product),
+                  ),
+                );
+              },
+              child: _buildProductItem(product: product),
+            );
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text("Error: $err")),
     );
   }
 
   Widget _buildProductItem({required dynamic product}) {
-    final isFavorite = _favoriteService.isFavorite(product);
-    return Container(
-      decoration: BoxDecoration(
-        color: Appcolor.cardColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer(
+      builder: (context, ref, child) {
+        final isFavorite = ref.watch(isFavoriteProvider(product));
+        final favoriteNotifier = ref.read(favoriteServiceProvider.notifier);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Appcolor.cardColor,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Stack(
             children: [
-              Expanded(
-                flex: 5,
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(12.0),
-                  child: Image.network(product['image']),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12.0, 0, 12.0, 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        product['title'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
-                          color: Appcolor.textColor,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(12.0),
+                      child: Image.network(product['image']),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12.0, 0, 12.0, 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            '\$${product['price']}',
+                            product['title'],
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
                               color: Appcolor.textColor,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const Spacer(),
-                          _buildColorSwatch(Colors.black),
-                          const SizedBox(width: 4),
-                          _buildColorSwatch(Colors.pink.shade200),
-                          const SizedBox(width: 4),
-                          _buildColorSwatch(Colors.orange.shade300),
-                          const SizedBox(width: 4),
-                          _buildColorSwatch(Colors.teal.shade300),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text(
+                                '\$${product['price']}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Appcolor.textColor,
+                                ),
+                              ),
+                              const Spacer(),
+                              _buildColorSwatch(Colors.black),
+                              const SizedBox(width: 4),
+                              _buildColorSwatch(Colors.pink.shade200),
+                              const SizedBox(width: 4),
+                              _buildColorSwatch(Colors.orange.shade300),
+                              const SizedBox(width: 4),
+                              _buildColorSwatch(Colors.teal.shade300),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    favoriteNotifier.toggleFavorite(product);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Appcolor.primaryColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.circular(10),
+                      ),
+                    ),
+                    child: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Appcolor.cardColor,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () {
-                _favoriteService.toggleFavorite(product);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Appcolor.primaryColor,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(10),
-                  ),
-                ),
-                child: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: Appcolor.cardColor,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

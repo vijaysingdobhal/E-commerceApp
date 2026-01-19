@@ -1,40 +1,17 @@
 import 'package:ecommerceapp/Api/FavoriteService.dart';
 import 'package:ecommerceapp/Repository/Screens/ProductDetail/ProductDetailScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../Domain/Constant/appcolor.dart';
 import '../BottomNov/BottomNavScreen.dart';
 
-
-class FavoriteScreen extends StatefulWidget {
+class FavoriteScreen extends ConsumerWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
 
   @override
-  _FavoriteScreenState createState() => _FavoriteScreenState();
-}
-
-class _FavoriteScreenState extends State<FavoriteScreen> {
-  final FavoriteService _favoriteService = FavoriteService();
-
-  @override
-  void initState() {
-    super.initState();
-    _favoriteService.addListener(_onFavoritesChanged);
-  }
-
-  @override
-  void dispose() {
-    _favoriteService.removeListener(_onFavoritesChanged);
-    super.dispose();
-  }
-
-  void _onFavoritesChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final favorites = _favoriteService.favoriteItems;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoriteAsyncValue = ref.watch(favoriteFutureProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,31 +32,46 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: favorites.isEmpty
-          ? const Center(child: Text("No favorite products found"))
-          : ListView.builder(
-              itemCount: favorites.length,
-              itemBuilder: (context, index) {
-                final product = favorites[index];
-                return _buildFavoriteItem(product);
-              },
-            ),
+      body: favoriteAsyncValue.when(
+        data: (_) {
+          final favorites = ref.watch(favoriteServiceProvider);
+          final favoriteNotifier = ref.read(favoriteServiceProvider.notifier);
+
+          if (favorites.isEmpty) {
+            return const Center(child: Text("No favorite products found"));
+          }
+
+          return ListView.builder(
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final product = favorites[index];
+              return _buildFavoriteItem(context, product, favoriteNotifier);
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text("Error: $err")),
+      ),
     );
   }
 
-  Widget _buildFavoriteItem(dynamic product) {
+  Widget _buildFavoriteItem(
+      BuildContext context, dynamic product, FavoriteService favoriteNotifier) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-          leading: Image.network(product['image'], width: 80, height: 80, fit: BoxFit.cover),
-          title: Text(product['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text('\$${product['price']}', style: const TextStyle(color: Colors.grey)),
+          leading: Image.network(product['image'],
+              width: 80, height: 80, fit: BoxFit.cover),
+          title: Text(product['title'],
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('\$${product['price']}',
+              style: const TextStyle(color: Colors.grey)),
           trailing: IconButton(
             icon: const Icon(Icons.favorite, color: Colors.red),
             onPressed: () {
-              _favoriteService.toggleFavorite(product);
+              favoriteNotifier.toggleFavorite(product);
             },
           ),
           onTap: () {
